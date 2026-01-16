@@ -119,7 +119,7 @@ function renderJobBadge(jobAbbr, level, maxLevel) {
 
 function renderCharacterCard(character, index) {
   const { name, world, image, jobs } = character;
-  const imageOnRight = index % 2 === 1;
+  const shouldReverse = index % 2 === 1;
 
   // Combine all jobs into one array for lookup
   const allJobs = [...jobs.combat, ...jobs.crafters, ...jobs.gatherers, ...(jobs.phantom || [])];
@@ -228,8 +228,9 @@ function renderCharacterCard(character, index) {
   `;
 
   return `
-    <div class="character-card">
-      ${imageOnRight ? infoHTML + imageHTML : imageHTML + infoHTML}
+    <div class="character-card${shouldReverse ? ' reverse' : ''}">
+      ${imageHTML}
+      ${infoHTML}
     </div>
   `;
 }
