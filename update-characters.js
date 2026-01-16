@@ -4,16 +4,10 @@ import { writeFileSync } from 'fs';
 
 const CHARACTERS = [
   {
-    id: '24921505',
-    name: 'Mira Wa\'neko',
-    world: 'Diabolos [Crystal]',
-    image: 'https://img2.finalfantasyxiv.com/f/7c13a0269a6d7953946aff5be6ecff69_7b33d33ae3ecb996f778a5f67a6a0af6fl0.jpg?1768586024'
-  },
-  {
-    id: '24387385',
-    name: 'Mira Wa\'neko',
+    id: '9932674',
+    name: 'Cereal Knight',
     world: 'Zodiark [Light]',
-    image: 'https://img2.finalfantasyxiv.com/f/e5de5126497a6bf816908d12fdb2e908_c274370774c6bc3483cc8740805f41bcfl0.jpg?1768583610'
+    image: 'https://img2.finalfantasyxiv.com/f/7f794065dbcb925425ffc7ef849ead6b_c274370774c6bc3483cc8740805f41bcfl0.jpg?1768603891'
   }
 ];
 
