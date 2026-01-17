@@ -119,7 +119,7 @@ function renderJobBadge(jobAbbr, level, maxLevel) {
 }
 
 function renderCharacterCard(character, index) {
-  const { name, world, image, jobs } = character;
+  const { id, name, world, image, jobs } = character;
   const shouldReverse = index % 2 === 1;
 
   // Combine all jobs into one array for lookup
