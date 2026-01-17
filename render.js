@@ -213,9 +213,9 @@ function renderCharacterCard(character, index) {
 
   // Build HTML based on image position
   const imageHTML = `
-    <div class="character-image">
+    <a href="https://na.finalfantasyxiv.com/lodestone/character/${id}/" target="_blank" rel="noopener" class="character-image">
       <img src="${image}" alt="${name}">
-    </div>
+    </a>
   `;
 
   const infoHTML = `
