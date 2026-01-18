@@ -51,7 +51,7 @@ const CONFIG = {
   // SOCIAL MEDIA LINKS
   // ==========================================================================
   // Add your social media links here. Set to null or empty array if you don't want social links.
-  // Supported platforms: twitter, bluesky (you can add more by updating the CSS and HTML)
+  // Supported platforms: twitter, bluesky, youtube, twitch, tiktok (you can add more by updating the CSS and HTML)
   // ==========================================================================
   socialLinks: [
     {
