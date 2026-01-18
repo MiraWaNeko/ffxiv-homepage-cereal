@@ -2,7 +2,12 @@ name: Update FFXIV Character Data
 
 on:
   schedule:
-    # Runs every 6 hours
+    # Runs every 6 hours (at minute 0 of every 6th hour)
+    # To change frequency, edit this cron expression:
+    #   '0 */12 * * *' = Every 12 hours
+    #   '0 0 * * *'    = Once per day at midnight UTC
+    #   '0 0,12 * * *' = Twice per day (midnight and noon UTC)
+    # See https://crontab.guru/ for help with cron expressions
     - cron: '0 */6 * * *'
   workflow_dispatch: # Allows manual triggering
 
@@ -30,19 +35,45 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Restore cache from previous deployment
+        continue-on-error: true
+        run: |
+          git fetch origin gh-pages:gh-pages || true
+          git checkout gh-pages -- achievements-cache.json || true
+
       - name: Fetch character data
         run: pnpm run update
 
-      - name: Check for changes
-        id: git-check
+      - name: Prepare deployment directory
         run: |
-          git diff --exit-code data.js || echo "changed=true" >> $GITHUB_OUTPUT
+          mkdir -p deploy
+          cp index.html deploy/
+          cp config.js deploy/
+          cp render.js deploy/
+          cp styles.css deploy/
+          cp favicon.svg deploy/
+          cp data.js deploy/
+          cp achievements-cache.json deploy/
+          cp achievements.json deploy/
+          cp time-limited-achievements.json deploy/
 
-      - name: Commit and push if changed
-        if: steps.git-check.outputs.changed == 'true'
+      - name: Create CNAME file from config
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add data.js
-          git commit -m "Update character data from Lodestone"
-          git push
+          node --input-type=module -e "
+          import CONFIG from './config.js';
+          import { writeFileSync } from 'fs';
+          if (CONFIG.deployment.customDomain) {
+            writeFileSync('deploy/CNAME', CONFIG.deployment.customDomain);
+            console.log('Created CNAME file with domain:', CONFIG.deployment.customDomain);
+          } else {
+            console.log('No custom domain configured, skipping CNAME file');
+          }
+          "
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy
+          publish_branch: gh-pages
+          force_orphan: true

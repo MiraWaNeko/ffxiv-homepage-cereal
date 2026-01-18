@@ -1,18 +1,13 @@
 import fetch from 'node-fetch';
 import * as cheerio from 'cheerio';
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync } from 'fs';
+import { fetchNewAchievements } from './fetch-achievements.js';
+import CONFIG from './config.js';
 
-const CHARACTERS = [
-  {
-    id: '9932674',
-    name: 'Cereal Knight',
-    world: 'Zodiark [Light]',
-    image: 'https://img2.finalfantasyxiv.com/f/7f794065dbcb925425ffc7ef849ead6b_c274370774c6bc3483cc8740805f41bcfl0.jpg?1768603891'
-  }
-];
+const CHARACTERS = CONFIG.characters;
 
 async function fetchCharacterJobs(characterId) {
-  const url = `https://na.finalfantasyxiv.com/lodestone/character/${characterId}/class_job/`;
+  const url = `https://${CONFIG.lodestone.region}.finalfantasyxiv.com/lodestone/character/${characterId}/class_job/`;
 
   try {
     const response = await fetch(url, {
@@ -223,34 +218,20 @@ function getJobEquivalent(className) {
   return classToJob[className] || className;
 }
 
-async function fetchAchievementPoints(characterId) {
-  const url = `https://lalachievements.com/api/charcache/${characterId}`;
-
+async function fetchAchievementData(characterId) {
   try {
     console.log(`Fetching achievement data for character ${characterId}...`);
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      }
-    });
+    const result = await fetchNewAchievements(characterId, CONFIG.lodestone.region);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    if (result && result.total > 0) {
+      console.log(`✓ Achievement points fetched for character ${characterId}: ${result.totalPoints} (${result.total} achievements)`);
 
-    const data = await response.json();
-
-    if (data.scores && Array.isArray(data.scores)) {
-      const achievementScore = data.scores.find(score => score.type === 'achievements');
-
-      if (achievementScore) {
-        return {
-          allScore: achievementScore.allScore || 0,
-          baseScore: achievementScore.baseScore || 0,
-          allDate: achievementScore.allDate || null,
-          baseDate: achievementScore.baseDate || null
-        };
-      }
+      // Achievement IDs are stored in achievements-cache.json
+      // We only store the scores in data.js
+      return {
+        allScore: result.totalPoints,
+        baseScore: result.baseScore
+      };
     }
 
     console.log(`No achievement data found for character ${characterId}`);
@@ -261,23 +242,63 @@ async function fetchAchievementPoints(characterId) {
   }
 }
 
+function loadExistingData() {
+  if (existsSync('data.js')) {
+    try {
+      const fileContent = readFileSync('data.js', 'utf-8');
+      // Extract the JSON from the file
+      const match = fileContent.match(/const characterData = (\[[\s\S]*?\]);/);
+      if (match) {
+        return JSON.parse(match[1]);
+      }
+    } catch (error) {
+      console.log('Could not parse existing data.js, will treat as new data');
+    }
+  }
+  return [];
+}
+
+function hasDataChanged(oldChar, newChar) {
+  // Compare everything except lastUpdated
+  const oldData = { ...oldChar };
+  const newData = { ...newChar };
+  delete oldData.lastUpdated;
+  delete newData.lastUpdated;
+
+  return JSON.stringify(oldData) !== JSON.stringify(newData);
+}
+
 async function updateAllCharacters() {
   console.log('Fetching character data from Lodestone...');
 
+  const existingData = loadExistingData();
   const updatedCharacters = [];
 
   for (const char of CHARACTERS) {
     console.log(`Fetching data for ${char.name} (${char.world})...`);
     const jobs = await fetchCharacterJobs(char.id);
-    const achievements = await fetchAchievementPoints(char.id);
+    const achievements = await fetchAchievementData(char.id);
 
     if (jobs) {
-      updatedCharacters.push({
+      const newCharData = {
         ...char,
         jobs,
-        achievements,
-        lastUpdated: new Date().toISOString()
-      });
+        achievements
+      };
+
+      // Find existing character data by ID
+      const existingChar = existingData.find(c => c.id === char.id);
+
+      // Only update timestamp if data has changed
+      if (existingChar && !hasDataChanged(existingChar, newCharData)) {
+        newCharData.lastUpdated = existingChar.lastUpdated;
+        console.log(`No changes detected for ${char.name}, keeping existing timestamp`);
+      } else {
+        newCharData.lastUpdated = new Date().toISOString();
+        console.log(`Data changed for ${char.name}, updating timestamp`);
+      }
+
+      updatedCharacters.push(newCharData);
     }
 
     // Add delay to be respectful to the server

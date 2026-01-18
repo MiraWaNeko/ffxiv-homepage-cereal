@@ -1,0 +1,80 @@
+// ============================================================================
+// FFXIV Homepage Configuration
+// ============================================================================
+// This is the main configuration file for your FFXIV character homepage.
+// When forking this repository, this is the primary file you need to customize.
+// ============================================================================
+
+const CONFIG = {
+  // ==========================================================================
+  // SITE INFORMATION
+  // ==========================================================================
+  site: {
+    // The title shown in the browser tab
+    title: 'CEREALvsGAME - FFXIV Characters',
+
+    // The main header displayed on the page
+    header: 'FFXIV Characters',
+  },
+
+  // ==========================================================================
+  // CHARACTER INFORMATION
+  // ==========================================================================
+  // Add your FFXIV characters here. You can find character IDs in the Lodestone URL.
+  // Example: https://na.finalfantasyxiv.com/lodestone/character/24921505/
+  //          The character ID is: 24921505
+  //
+  // To get the character image URL:
+  // 1. Visit your character's Lodestone page
+  // 2. Right-click on the character portrait
+  // 3. Select "Copy Image Address"
+  // ==========================================================================
+  characters: [
+    {
+      id: '9932674',
+      name: 'Cereal Knight',
+      world: 'Zodiark [Light]',
+      image: 'https://img2.finalfantasyxiv.com/f/7f794065dbcb925425ffc7ef849ead6b_c274370774c6bc3483cc8740805f41bcfl0.jpg?1768603891'
+    }
+  ],
+
+  // ==========================================================================
+  // LODESTONE SETTINGS
+  // ==========================================================================
+  lodestone: {
+    // The Lodestone region for your characters
+    // Options: 'na' (North America), 'eu' (Europe), 'jp' (Japan), 'fr' (France), 'de' (Germany)
+    region: 'eu',
+  },
+
+  // ==========================================================================
+  // SOCIAL MEDIA LINKS
+  // ==========================================================================
+  // Add your social media links here. Set to null or empty array if you don't want social links.
+  // Supported platforms: twitter, bluesky (you can add more by updating the CSS and HTML)
+  // ==========================================================================
+  socialLinks: [
+    {
+      platform: 'twitter',
+      url: 'https://twitter.com/CEREALvsGAME',
+      label: 'Twitter'
+    },
+    {
+      platform: 'bluesky',
+      url: 'https://bsky.app/profile/cerealvsgame.bsky.social',
+      label: 'Bluesky'
+    }
+  ],
+
+  // ==========================================================================
+  // GITHUB PAGES SETTINGS
+  // ==========================================================================
+  deployment: {
+    // Custom domain for GitHub Pages (set to null if not using a custom domain)
+    // This will be used to create the CNAME file during deployment
+    customDomain: null,
+  },
+};
+
+// Export for ES6 modules
+export default CONFIG;
