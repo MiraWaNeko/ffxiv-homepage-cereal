@@ -63,6 +63,11 @@ const CONFIG = {
       platform: 'bluesky',
       url: 'https://bsky.app/profile/cerealvsgame.bsky.social',
       label: 'Bluesky'
+    },
+    {
+      platform: 'twitch',
+      url: 'https://twitch.tv/CEREALvsGAME',
+      label: 'Twitch'
     }
   ],
 
