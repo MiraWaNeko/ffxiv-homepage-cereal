@@ -33,7 +33,7 @@ const CONFIG = {
     {
       id: '9932674',
       name: 'Cereal Knight',
-      world: 'Zodiark [Light]',
+      world: 'Maduin [Dynamis]',
       image: 'https://img2.finalfantasyxiv.com/f/7f794065dbcb925425ffc7ef849ead6b_c274370774c6bc3483cc8740805f41bcfl0.jpg?1768603891'
     }
   ],
